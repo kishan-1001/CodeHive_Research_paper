@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 // @ts-ignore
 import HTMLFlipBook from 'react-pageflip';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, ExternalLink, MousePointer2, AlertCircle, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, ExternalLink, AlertCircle, Download } from 'lucide-react';
 
 // Use guaranteed stable worker
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;

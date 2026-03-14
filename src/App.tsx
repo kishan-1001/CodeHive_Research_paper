@@ -82,8 +82,8 @@ function App() {
 
       <header className="z-30 h-16 w-full px-6 md:px-10 flex justify-between items-center bg-darkBase/40 backdrop-blur-2xl border-b border-glassBorder shadow-sm relative">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-md">
-            <span className="font-outfit font-black text-white text-xl tracking-tighter shadow-black drop-shadow-md">C</span>
+          <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-md overflow-hidden p-[2px]">
+            <img src="/kiri_.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md rounded-[10px]" />
           </div>
           <div className="flex flex-col">
             <h1 className="text-[16px] font-semibold text-white tracking-wide leading-tight font-outfit">CodeHive Research</h1>

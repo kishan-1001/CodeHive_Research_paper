@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 // @ts-ignore
 import HTMLFlipBook from 'react-pageflip';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, ExternalLink, MousePointer2, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, ExternalLink, MousePointer2, AlertCircle, Download } from 'lucide-react';
 
 // Use guaranteed stable worker
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
@@ -72,49 +72,31 @@ function App() {
   const actualPageWidth = isMobile ? totalBookWidth : totalBookWidth / 2;
 
   return (
-    <div className="h-screen w-full bg-[#02040a] text-slate-100 flex flex-col font-sans overflow-hidden">
-      {/* Dynamic Background */}
+    <div className="h-screen w-full bg-darkBase text-slate-100 flex flex-col font-outfit overflow-hidden relative">
+      {/* High-End Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-15%] left-[-15%] w-[80%] h-[80%] bg-blue-600/[0.08] rounded-full blur-[180px]"></div>
-        <div className="absolute bottom-[-15%] right-[-15%] w-[80%] h-[80%] bg-indigo-600/[0.08] rounded-full blur-[180px]"></div>
+        <div className="absolute top-0 left-[-10%] w-[60%] h-[60%] bg-indigo-500/[0.03] rounded-full blur-[150px] animate-pulse" style={{ animationDuration: '8s' }}></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-500/[0.04] rounded-full blur-[180px] animate-pulse" style={{ animationDuration: '10s' }}></div>
+        <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-blue-500/[0.02] rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '12s' }}></div>
       </div>
 
-      <header className="z-30 h-20 w-full px-10 flex justify-between items-center bg-[#0d1117]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.6)] relative">
-        <div className="flex items-center gap-6">
-          <div className="w-12 h-12 bg-gradient-to-br from-[#2563eb] to-[#4f46e5] rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)] transform rotate-2">
-            <span className="font-black text-white text-2xl italic tracking-tighter">C</span>
+      <header className="z-30 h-16 w-full px-6 md:px-10 flex justify-between items-center bg-darkBase/40 backdrop-blur-2xl border-b border-glassBorder shadow-sm relative">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-md">
+            <span className="font-outfit font-black text-white text-xl tracking-tighter shadow-black drop-shadow-md">C</span>
           </div>
-          <div className="flex flex-col gap-0.5">
-            <h1 className="text-lg font-black text-white tracking-[0.15em] leading-none uppercase">CODEHIVE RESEARCH PAPER</h1>
+          <div className="flex flex-col">
+            <h1 className="text-[16px] font-semibold text-white tracking-wide leading-tight font-outfit">CodeHive Research</h1>
             <a
               href="https://mycodehive.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-all flex items-center gap-1.5 opacity-90 group"
+              className="text-[11px] font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1 opacity-100 group font-inter"
             >
               mycodehive.in
               <ExternalLink size={10} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
           </div>
-        </div>
-
-        <div className="flex items-center gap-6">
-          <div className="flex items-center bg-white/5 rounded-2xl px-3 py-1.5 border border-white/10 backdrop-blur-md">
-            <button onClick={() => setZoom(z => Math.max(0.4, z - 0.1))} className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-400 hover:text-white active:scale-90">
-              <ZoomOut size={18} />
-            </button>
-            <span className="px-4 text-[11px] font-black min-w-[3.5rem] text-center text-slate-200">{Math.round(zoom * 100)}%</span>
-            <button onClick={() => setZoom(z => Math.min(2.5, z + 0.1))} className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-400 hover:text-white active:scale-90">
-              <ZoomIn size={18} />
-            </button>
-          </div>
-
-          <button
-            onClick={downloadPDF}
-            className="group relative overflow-hidden bg-[#2563eb] hover:bg-[#3b82f6] text-white px-7 py-3 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-[0_10px_25px_rgba(37,99,235,0.3)] active:scale-95"
-          >
-            <span className="relative z-10">Download</span>
-          </button>
         </div>
       </header>
 
@@ -130,95 +112,105 @@ function App() {
         )}
 
         <div className="relative transition-transform duration-300 ease-out flex flex-col items-center" style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}>
-          {/* Navigation Contols */}
-          <div className="absolute left-[-120px] top-1/2 -translate-y-1/2 z-30 hidden 2xl:block">
-            <button
-              onClick={() => bookRef.current?.pageFlip()?.flipPrev()}
-              disabled={pageNumber === 1}
-              className="p-6 bg-slate-900/40 hover:bg-slate-800 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] transition-all disabled:opacity-0 group"
-            >
-              <ChevronLeft size={44} className="group-hover:-translate-x-1 transition-transform" />
-            </button>
-          </div>
-
-          <div className="absolute right-[-120px] top-1/2 -translate-y-1/2 z-30 hidden 2xl:block">
-            <button
-              onClick={() => bookRef.current?.pageFlip()?.flipNext()}
-              disabled={numPages ? pageNumber >= numPages - 1 : true}
-              className="p-6 bg-slate-900/40 hover:bg-slate-800 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] transition-all disabled:opacity-0 group"
-            >
-              <ChevronRight size={44} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
-
-          <div className="shadow-[0_80px_160px_-40px_rgba(0,0,0,0.8)] rounded-sm overflow-hidden bg-white border border-white/10">
-            <Document
-              file="/researchpaper.pdf"
-              onLoadSuccess={onDocumentLoadSuccess}
-              onLoadError={onDocumentLoadError}
-              loading={<div className="h-[600px] w-[800px] flex items-center justify-center bg-[#0d1117]"><Loader2 className="animate-spin text-blue-500" size={40} /></div>}
-            >
-              {numPages && (
-                // @ts-ignore
-                <HTMLFlipBook
-                  width={actualPageWidth}
-                  height={bookHeight}
-                  size="fixed"
-                  showCover={true}
-                  onFlip={onFlip}
-                  ref={bookRef}
-                  usePortrait={isMobile}
-                  drawShadow={true}
-                  flippingTime={1000}
-                  useMouseEvents={true}
-                  style={{ backgroundColor: '#fff' }}
-                >
-                  {[...Array(numPages)].map((_, index) => (
-                    <PDFPage key={index}>
-                      <Page
-                        key={`page-${index + 1}`}
-                        pageNumber={index + 1}
-                        width={actualPageWidth}
-                        devicePixelRatio={3}
-                        renderAnnotationLayer={false}
-                        renderTextLayer={true}
-                        className="pdf-page-render"
-                        loading={null}
-                      />
-                    </PDFPage>
-                  ))}
-                </HTMLFlipBook>
-              )}
-            </Document>
-          </div>
-
-          {/* Interaction Guide */}
-          <div className="mt-16 mb-20 flex flex-col items-center gap-6 scale-[1] sm:scale-100 origin-top">
-            <div className="flex items-center gap-10 bg-white/5 backdrop-blur-3xl border border-white/10 px-12 py-5 rounded-full shadow-2xl group hover:bg-white/10 transition-all cursor-default">
-              <div className="flex items-center gap-4">
-                <MousePointer2 size={18} className="text-blue-500 animate-bounce" />
-                <span className="text-[12px] font-black text-white tracking-[0.3em] uppercase">
-                  {isMobile ? 'SWIPE TO TURN' : 'CLICK CORNER TO TURN'}
-                </span>
-              </div>
-              <div className="h-5 w-[1px] bg-white/20"></div>
-              <span className="text-base font-black text-slate-300 tracking-[0.1em] font-mono tabular-nums">
-                <span className="text-blue-400">{pageNumber}</span> <span className="text-slate-600 mx-1">/</span> {numPages || '--'}
-              </span>
+          <div className="relative group" style={{ width: totalBookWidth }}>
+            <div className="shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] sm:rounded-lg overflow-hidden bg-white ring-1 ring-white/10 transition-transform duration-500">
+              <Document
+                file="/researchpaper.pdf"
+                onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError={onDocumentLoadError}
+                loading={<div className="h-[600px] w-[800px] flex items-center justify-center bg-[#0d1117]"><Loader2 className="animate-spin text-blue-500" size={40} /></div>}
+              >
+                {numPages && (
+                  // @ts-ignore
+                  <HTMLFlipBook
+                    width={actualPageWidth}
+                    height={bookHeight}
+                    size="fixed"
+                    showCover={true}
+                    onFlip={onFlip}
+                    ref={bookRef}
+                    usePortrait={isMobile}
+                    drawShadow={true}
+                    flippingTime={1000}
+                    useMouseEvents={true}
+                    style={{ backgroundColor: '#fff' }}
+                  >
+                    {[...Array(numPages)].map((_, index) => (
+                      <PDFPage key={index}>
+                        <Page
+                          key={`page-${index + 1}`}
+                          pageNumber={index + 1}
+                          width={actualPageWidth}
+                          devicePixelRatio={3}
+                          renderAnnotationLayer={false}
+                          renderTextLayer={true}
+                          className="pdf-page-render"
+                          loading={null}
+                        />
+                      </PDFPage>
+                    ))}
+                  </HTMLFlipBook>
+                )}
+              </Document>
             </div>
-            <p className="text-[10px] font-bold text-slate-500 tracking-[0.6em] uppercase opacity-60">
-              ULTRA-HIGH DEFINITION REPOSITORY
-            </p>
+
+          </div>
+
+          {/* Glassmorphic Minimalist Dock */}
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-darkBase/60 backdrop-blur-2xl border border-glassBorder rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.5)] transition-all hover:bg-darkBase/70">
+            {/* Zoom Controls */}
+            <div className="flex items-center bg-white/[0.03] rounded-2xl p-1 border border-white/[0.05]">
+              <button onClick={() => setZoom(z => Math.max(0.4, z - 0.1))} className="p-2 sm:p-2.5 rounded-xl transition-all text-slate-400 hover:bg-white/10 hover:text-white active:scale-95">
+                <ZoomOut size={16} />
+              </button>
+              <div className="w-10 sm:w-12 text-center text-xs font-semibold text-white tracking-wide font-inter">
+                {Math.round(zoom * 100)}%
+              </div>
+              <button onClick={() => setZoom(z => Math.min(2.5, z + 0.1))} className="p-2 sm:p-2.5 rounded-xl transition-all text-slate-400 hover:bg-white/10 hover:text-white active:scale-95">
+                <ZoomIn size={16} />
+              </button>
+            </div>
+            
+            <div className="w-px h-6 sm:h-8 bg-glassBorder mx-0.5 sm:mx-1"></div>
+            
+            {/* Navigation Controls */}
+            <div className="flex items-center bg-white/[0.03] rounded-2xl p-1 border border-white/[0.05]">
+              <button 
+                onClick={() => bookRef.current?.pageFlip()?.flipPrev()}
+                disabled={pageNumber === 1}
+                className="p-2 sm:p-2.5 rounded-xl transition-all text-slate-400 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              
+              <div className="px-2 sm:px-3 flex items-center gap-1.5 text-xs font-medium font-inter">
+                <span className="text-white w-4 text-center">{pageNumber}</span>
+                <span className="text-slate-500">of</span>
+                <span className="text-slate-400">{numPages || '-'}</span>
+              </div>
+              
+              <button 
+                onClick={() => bookRef.current?.pageFlip()?.flipNext()}
+                disabled={numPages ? pageNumber >= numPages - 1 : true}
+                className="p-2 sm:p-2.5 rounded-xl transition-all text-slate-400 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+            
+            <div className="w-px h-6 sm:h-8 bg-glassBorder mx-0.5 sm:mx-1"></div>
+            
+            {/* Download Button */}
+            <button
+              onClick={downloadPDF}
+              className="flex items-center justify-center p-2.5 sm:px-5 sm:py-3 gap-2 bg-white text-darkBase hover:bg-slate-200 rounded-2xl transition-all active:scale-95 shadow-lg shadow-white/10"
+            >
+              <Download size={16} strokeWidth={2.5} />
+              <span className="text-xs font-bold tracking-wide hidden sm:block font-inter">Download</span>
+            </button>
           </div>
         </div>
       </main>
-
-      <footer className="h-11 w-full bg-[#0d1117]/95 border-t border-white/10 flex items-center justify-center px-10 relative z-20">
-        <div className="flex items-center gap-4">
-          <div className="w-2 h-2 rounded-full bg-green-500/40 shadow-[0_0_10px_rgba(34,197,94,0.4)] animate-pulse"></div>
-          <p className="text-[9px] font-black text-slate-600 tracking-[0.4em] uppercase">CONNECTION SECURE • ULTRA-RES ACTIVE</p>
-        </div>
-      </footer>
 
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -256,10 +248,9 @@ function App() {
         .react-pdf__Page__annotations {
           display: none !important;
         }
-        h1 {
-          background: linear-gradient(to right, #fff, #64748b);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+        .vertical-text {
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
         }
       `}} />
     </div>
